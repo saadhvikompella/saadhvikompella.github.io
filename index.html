@@ -839,10 +839,10 @@ html.has-cursor textarea, html.has-cursor input[type=text], html.has-cursor inpu
 .hw-step h3 { margin: 0; font-family: var(--f-body); font-weight: 500; font-size: clamp(28px, 3.3vw, 46px); line-height: 1; letter-spacing: -.03em; color: var(--ink); white-space: nowrap; }
 .hw-dot { position: absolute; top: -13px; right: -13px; width: 28px; height: 28px; border-radius: 50%; background: #ecbfd2; display: grid; place-items: center; transform: scale(0); transition: transform .5s cubic-bezier(.3,1.6,.5,1); }
 .hw-dot i { font-style: normal; font-size: 12px; font-weight: 600; color: var(--ink); rotate: calc(var(--r) * -1); }
-.ppath.drawn ~ .hw-steps .hw-dot { transform: scale(1); }
+.hw-step.shown .hw-dot { transform: scale(1); transition-delay: .12s; }
 /* each card fades in as the line reaches it (opacity only, so the cards never change size and the line always meets their edges) (the delays are set per card in the script) */
 .psteps-wrap.anim .hw-step { opacity: 0; }
-.psteps-wrap.anim .ppath.drawn ~ .hw-steps .hw-step { opacity: 1; }
+.psteps-wrap.anim .hw-step.shown { opacity: 1; }
 @media (prefers-reduced-motion: reduce) { .psteps-wrap.anim .hw-step { opacity: 1; } }
 @media (max-width: 720px) {
   .hw-steps { grid-template-columns: 1fr; row-gap: 44px; }
@@ -986,7 +986,7 @@ html.has-cursor textarea, html.has-cursor input[type=text], html.has-cursor inpu
 
   <section class="notes gutter" id="notes" aria-labelledby="notes-title">
     <div class="notes-head"><h2 id="notes-title">Leave a thought</h2><p>Read what others have left (drag the cards around to see them all), then pick a card and write your own. Notes are anonymous: no names are kept or shown.</p></div>
-    <div class="board">
+    <div class="board" hidden>
       <p class="board-count vh" id="wall-count" aria-live="polite">Loading notes&hellip;</p>
       <ul class="wall" id="wall" aria-label="Notes left by visitors"></ul>
     </div>
@@ -2073,15 +2073,32 @@ html.has-cursor textarea, html.has-cursor input[type=text], html.has-cursor inpu
     arr.push(Math.max(.01, Math.min(rem, DASH)), L + 40);
     path.setAttribute("stroke-dasharray", arr.join(" "));
   }
+  // Pace follows the reader: at rest the line draws at its normal speed; while the page is scrolling quickly it speeds up (up to about 6x),
+  // and once the section is mostly scrolled past it finishes almost at once, so the cards are never left blank.
+  var vel = 0, lastY = window.scrollY, lastT = performance.now(), t = 0, prev = 0;
+  window.addEventListener("scroll", function () {
+    var now = performance.now(), dt = Math.max(1, now - lastT), v = Math.abs(window.scrollY - lastY) / dt;
+    vel = vel * 0.5 + v * 0.5; lastY = window.scrollY; lastT = now;
+  }, { passive: true });
+  function cardsUpTo(time) {
+    var els = wrap.querySelectorAll(".hw-step");
+    [].forEach.call(els, function (el, j) { if (time >= (j === 0 ? 0 : 0.15 + j * HOP)) el.classList.add("shown"); });
+  }
   function frame(now) {
-    if (!started) started = now;
-    var t = (now - started) / 1000, all = true;
+    var dt = prev ? Math.min(0.05, (now - prev) / 1000) : 0; prev = now;
+    if (now - lastT > 150) vel *= 0.85;                      // scrolling has stopped: ease back to normal pace
+    var speed = 1 + Math.min(vel * 4, 5);
+    var r = wrap.getBoundingClientRect(); if (r.bottom < innerHeight * 0.55) speed = 12;
+    wrap.style.setProperty("--hw-fade", speed > 2 ? ".2s" : ".5s");
+    t += dt * speed;
+    var all = true;
     hops.forEach(function (h, j) { var p = Math.max(0, Math.min(1, (t - (0.15 + j * HOP)) / HOP)); if (p < 1) all = false; paint(h, p); });
-    if (!all) requestAnimationFrame(frame); else done = true;
+    cardsUpTo(t);
+    if (!all) requestAnimationFrame(frame); else { done = true; cardsUpTo(99); }
   }
   function run() {
     svg.classList.add("drawn");
-    if (still) { done = true; hops.forEach(function (h) { paint(h, 1); }); return; }
+    if (still) { done = true; hops.forEach(function (h) { paint(h, 1); }); cardsUpTo(99); return; }
     requestAnimationFrame(frame);
   }
   function layout() {
@@ -2107,9 +2124,7 @@ html.has-cursor textarea, html.has-cursor input[type=text], html.has-cursor inpu
       else { h._len = 0; paint(h, 0); }
     });
     [].forEach.call(els, function (el, j) {
-      var t = j === 0 ? 0 : 0.15 + j * HOP, dot = el.querySelector(".hw-dot");
-      if (dot) dot.style.transitionDelay = (t + .15) + "s";
-      el.style.transition = "opacity .5s ease " + t + "s, rotate .4s cubic-bezier(.2,.8,.2,1), translate .4s cubic-bezier(.2,.8,.2,1)";
+      el.style.transition = "opacity var(--hw-fade, .5s) ease, rotate .4s cubic-bezier(.2,.8,.2,1), translate .4s cubic-bezier(.2,.8,.2,1)";
     });
   }
   layout();
@@ -2160,6 +2175,13 @@ html.has-cursor textarea, html.has-cursor input[type=text], html.has-cursor inpu
     draft.className = "memo memo-big m-" + id; $("draft-title").textContent = t.title; $("draft-prompt").textContent = t.prompt; $("draft-date").textContent = fmt(Date.now());
     pickStage.hidden = true; writeStage.hidden = false; status.textContent = "";
     if (!canWrite) { ta.disabled = true; ta.placeholder = "Notes can't be added from this view"; } else ta.focus({ preventScroll: true });
+    // Bring the card being written on to the middle of the screen, so its Pin button is in view without scrolling
+    requestAnimationFrame(function () {
+      var r = writeStage.getBoundingClientRect(), head = 70, room = innerHeight - head;
+      var y = window.scrollY + r.top - head - Math.max(0, (room - r.height) / 2);
+      if (r.height > room) y = window.scrollY + r.bottom - innerHeight + 16;   // taller than the screen: make sure the button is showing
+      window.scrollTo({ top: Math.max(0, y), behavior: reduce ? "auto" : "smooth" });
+    });
     if (!reduce && window.gsap && from) { var to = draft.getBoundingClientRect(); gsap.fromTo(draft, { x: from.left - to.left, y: from.top - to.top, scale: from.width / to.width, rotation: 0 }, { x: 0, y: 0, scale: 1, duration: .7, ease: "power3.out", clearProps: "transform" }); }
     refresh();
   }
@@ -2195,7 +2217,8 @@ html.has-cursor textarea, html.has-cursor input[type=text], html.has-cursor inpu
       li.dataset.id = n.id; li.style.zIndex = String(notes.length - i); li.appendChild(m); wall.appendChild(li); drag(li);
     });
     topZ = notes.length + 1;
-    if (!notes.length) { var e = document.createElement("li"); e.className = "wall-empty"; e.textContent = "No notes yet. Be the first to leave one."; wall.appendChild(e); }
+    // The table only takes up room once there is at least one note on it
+    wall.closest(".board").hidden = !notes.length;
     count.textContent = notes.length ? notes.length + (notes.length === 1 ? " note on the table. Drag the cards around to read them all." : " notes on the table. Drag the cards around to read them all.") : "The table is empty";
     layout();
   }
@@ -2284,13 +2307,15 @@ html.has-cursor textarea, html.has-cursor input[type=text], html.has-cursor inpu
     var m = mine();
     [].forEach.call(wall.querySelectorAll("li[data-id]"), function (li) {
       var id = li.dataset.id; if (!m[id] || li.querySelector(".memo-x")) return;
-      var b = document.createElement("button"); b.type = "button"; b.className = "memo-x"; b.textContent = "Remove";
+      var b = document.createElement("button"); b.type = "button"; b.className = "memo-x";
+      b.innerHTML = '<svg class="x-ico" viewBox="0 0 12 12" aria-hidden="true"><path d="M3 3l6 6M9 3l-6 6"/></svg><span class="x-txt">Remove for good?</span>';
+      var txt = b.querySelector(".x-txt");
       b.setAttribute("aria-label", "Remove your note");
       b.addEventListener("pointerdown", function (e) { e.stopPropagation(); });
       b.addEventListener("click", function (e) {
         e.stopPropagation();
-        if (!b.classList.contains("sure")) { b.classList.add("sure"); b.textContent = "Remove for good?"; setTimeout(function () { if (b.isConnected) { b.classList.remove("sure"); b.textContent = "Remove"; } }, 4000); return; }
-        b.disabled = true; b.textContent = "Removing…";
+        if (!b.classList.contains("sure")) { b.classList.add("sure"); b.setAttribute("aria-label", "Remove for good?"); setTimeout(function () { if (b.isConnected && !b.disabled) { b.classList.remove("sure"); b.setAttribute("aria-label", "Remove your note"); } }, 4000); return; }
+        b.disabled = true; txt.textContent = "Removing…";
         fetch(SB_URL + "/rest/v1/rpc/delete_my_note", { method: "POST", headers: Object.assign({ apikey: SB_KEY, "Content-Type": "application/json" }, /^sb_/.test(SB_KEY) ? {} : { Authorization: "Bearer " + SB_KEY }), body: JSON.stringify({ note_id: id, token: m[id] }) })
           .then(function (r) { if (!r.ok) throw 0; return r.json(); })
           .then(function (ok) {
@@ -2300,7 +2325,7 @@ html.has-cursor textarea, html.has-cursor input[type=text], html.has-cursor inpu
             if (!reduce && window.gsap) gsap.to(li, { opacity: 0, scale: .8, duration: .35, ease: "power2.in", onComplete: function () { render(); markMine(); } });
             else { render(); markMine(); }
           })
-          .catch(function () { b.disabled = false; b.classList.remove("sure"); b.textContent = "Couldn't remove. Try again"; });
+          .catch(function () { b.disabled = false; txt.textContent = "Couldn't remove. Retry?"; });
       });
       li.appendChild(b);
     });
@@ -2317,11 +2342,13 @@ html.has-cursor textarea, html.has-cursor input[type=text], html.has-cursor inpu
 
 
 <style>
-/* Remove button on your own notes */
-.wall > li .memo-x { position: absolute; top: -10px; right: -8px; z-index: 2; padding: 5px 10px; border: 0; border-radius: 999px; background: var(--ink); color: #fff; font: 600 11px/1 var(--f-body); letter-spacing: .02em; cursor: pointer; box-shadow: 0 4px 10px rgba(0,0,0,.2); opacity: .9; transition: opacity .2s, background-color .2s; }
-.wall > li .memo-x:hover, .wall > li .memo-x:focus-visible { opacity: 1; }
-.wall > li .memo-x.sure { background: #c2185b; }
-.wall > li .memo-x:disabled { opacity: .6; cursor: default; }
+/* Remove control on your own notes: a small cross that grows into "Remove for good?" on the first click */
+.wall > li .memo-x { position: absolute; top: -11px; right: -11px; z-index: 2; display: inline-flex; align-items: center; gap: 6px; height: 26px; max-width: 26px; padding: 0 0 0 7px; border: 0; border-radius: 999px; overflow: hidden; background: var(--ink); color: #fff; font: 600 11px/1 var(--f-body); letter-spacing: .02em; white-space: nowrap; cursor: pointer; box-shadow: 0 4px 10px rgba(0,0,0,.2); transition: max-width .35s cubic-bezier(.2,.8,.2,1), padding .35s cubic-bezier(.2,.8,.2,1), background-color .25s; }
+.wall > li .memo-x .x-ico { flex: none; width: 12px; height: 12px; stroke: currentColor; stroke-width: 1.8; stroke-linecap: round; fill: none; }
+.wall > li .memo-x .x-txt { opacity: 0; transition: opacity .2s; }
+.wall > li .memo-x.sure { max-width: 190px; padding: 0 12px 0 8px; background: #c2185b; }
+.wall > li .memo-x.sure .x-txt { opacity: 1; transition-delay: .1s; }
+.wall > li .memo-x:disabled { cursor: default; opacity: .75; }
 </style>
 
 </body>
