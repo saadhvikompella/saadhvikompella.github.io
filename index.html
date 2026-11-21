@@ -2253,7 +2253,7 @@ html.has-cursor textarea, html.has-cursor input[type=text], html.has-cursor inpu
 
   // Notes are stored in Supabase (a hosted database). Anyone can read them and add one; nobody can edit or delete from the page.
   // The URL and the public "anon" key below are safe to publish: the database's own rules decide what visitors may do.
-  var SB_URL = "", SB_KEY = "";
+  var SB_URL = "https://ceoaytztldamntkyrlgc.supabase.co", SB_KEY = "sb_publishable_9yHhvoesbqik-5-d0TC78Q_kLmJsMDd";
   function sb(method, query, body) {
     return fetch(SB_URL + "/rest/v1/notes" + query, {
       method: method,
