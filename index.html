@@ -2234,7 +2234,9 @@ html.has-cursor textarea, html.has-cursor input[type=text], html.has-cursor inpu
     send.disabled = true; status.textContent = "Pinning\u2026";
     var nid = window.crypto && crypto.randomUUID ? crypto.randomUUID() : "10000000-1000-4000-8000-100000000000".replace(/[018]/g, function (c) { return (c ^ Math.random() * 16 >> c / 4).toString(16); });
     pending = { id: nid };
-    sb("POST", "", { id: nid, topic: chosen, text: text }).then(function () {
+    var tok = Array.from(crypto.getRandomValues(new Uint8Array(24)), function (b) { return ("0" + b.toString(16)).slice(-2); }).join("");
+    sb("POST", "", { id: nid, topic: chosen, text: text, delete_token: tok }).then(function () {
+      var m = mine(); m[nid] = tok; saveMine(m);
       load(false);
       ta.value = ""; status.textContent = "Pinned. Thank you!"; refresh();
       setTimeout(function () { writeStage.hidden = true; pickStage.hidden = false; chosen = null; status.textContent = ""; }, 1600);
@@ -2266,7 +2268,7 @@ html.has-cursor textarea, html.has-cursor input[type=text], html.has-cursor inpu
       var known = {}; notes.forEach(function (n) { known[n.id] = 1; }); loaded = true;
       notes = rows.map(function (x) { return { id: x.id, topic: x.topic, text: typeof x.text === "string" ? x.text.slice(0, 280) : "", at: typeof x.at === "number" ? x.at : Date.parse(x.at) || 0 }; }).filter(function (n) { return n.text.trim(); });
       var fresh = first ? [] : notes.filter(function (n) { return !known[n.id]; });
-      render();
+      render(); markMine();
       fresh.forEach(function (n) {
         var el = wall.querySelector('[data-id="' + n.id + '"] .memo'); if (!el) return;
         var mine = pending && pending.id === n.id, r = mine && !writeStage.hidden ? draft.getBoundingClientRect() : null;
@@ -2274,6 +2276,34 @@ html.has-cursor textarea, html.has-cursor input[type=text], html.has-cursor inpu
         land(el, r);
       });
     }, function () { if (first) count.textContent = "Notes couldn't load just now"; });
+  }
+  // Your own notes: this browser keeps a private key for each note it pinned, so only you (on this device) see a Remove button on them.
+  function mine() { try { return JSON.parse(localStorage.getItem("my-notes") || "{}"); } catch (e) { return {}; } }
+  function saveMine(m) { try { localStorage.setItem("my-notes", JSON.stringify(m)); } catch (e) {} }
+  function markMine() {
+    var m = mine();
+    [].forEach.call(wall.querySelectorAll("li[data-id]"), function (li) {
+      var id = li.dataset.id; if (!m[id] || li.querySelector(".memo-x")) return;
+      var b = document.createElement("button"); b.type = "button"; b.className = "memo-x"; b.textContent = "Remove";
+      b.setAttribute("aria-label", "Remove your note");
+      b.addEventListener("pointerdown", function (e) { e.stopPropagation(); });
+      b.addEventListener("click", function (e) {
+        e.stopPropagation();
+        if (!b.classList.contains("sure")) { b.classList.add("sure"); b.textContent = "Remove for good?"; setTimeout(function () { if (b.isConnected) { b.classList.remove("sure"); b.textContent = "Remove"; } }, 4000); return; }
+        b.disabled = true; b.textContent = "Removing…";
+        fetch(SB_URL + "/rest/v1/rpc/delete_my_note", { method: "POST", headers: Object.assign({ apikey: SB_KEY, "Content-Type": "application/json" }, /^sb_/.test(SB_KEY) ? {} : { Authorization: "Bearer " + SB_KEY }), body: JSON.stringify({ note_id: id, token: m[id] }) })
+          .then(function (r) { if (!r.ok) throw 0; return r.json(); })
+          .then(function (ok) {
+            if (!ok) throw 0;
+            var mm = mine(); delete mm[id]; saveMine(mm);
+            notes = notes.filter(function (n) { return n.id !== id; });
+            if (!reduce && window.gsap) gsap.to(li, { opacity: 0, scale: .8, duration: .35, ease: "power2.in", onComplete: function () { render(); markMine(); } });
+            else { render(); markMine(); }
+          })
+          .catch(function () { b.disabled = false; b.classList.remove("sure"); b.textContent = "Couldn't remove. Try again"; });
+      });
+      li.appendChild(b);
+    });
   }
   function start() {
     if (!SB_URL || !SB_KEY) { count.textContent = "Notes are coming soon"; canWrite = false; render(); return; }
@@ -2286,6 +2316,13 @@ html.has-cursor textarea, html.has-cursor input[type=text], html.has-cursor inpu
 </script>
 
 
+<style>
+/* Remove button on your own notes */
+.wall > li .memo-x { position: absolute; top: -10px; right: -8px; z-index: 2; padding: 5px 10px; border: 0; border-radius: 999px; background: var(--ink); color: #fff; font: 600 11px/1 var(--f-body); letter-spacing: .02em; cursor: pointer; box-shadow: 0 4px 10px rgba(0,0,0,.2); opacity: .9; transition: opacity .2s, background-color .2s; }
+.wall > li .memo-x:hover, .wall > li .memo-x:focus-visible { opacity: 1; }
+.wall > li .memo-x.sure { background: #c2185b; }
+.wall > li .memo-x:disabled { opacity: .6; cursor: default; }
+</style>
 
 </body>
 </html>
