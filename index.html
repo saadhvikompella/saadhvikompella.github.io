@@ -94,7 +94,7 @@ header.open .menu-btn span:nth-child(3) { transform: translateY(-6px) rotate(-45
 
 /* Work */
 /* --hero-top places the greeting at the vertical center of the first screen; the same value is its pinned position, so it doesn't shift on scroll */
-.work { position: relative; --hero-top: max(clamp(150px, 17vw, 260px), calc(50vh - 40px)); padding-block: calc(var(--hero-top) - 54px) 120px; }
+.work { position: relative; --hero-top: max(clamp(150px, 17vw, 260px), calc(50vh - 110px)); padding-block: calc(var(--hero-top) - 54px) 120px; }
 .showcase { padding-block: 0 70px; }
 
 /* Process: sits below the project cards; big heading, then tilted outlined step cards */
@@ -145,10 +145,20 @@ header.open .menu-btn span:nth-child(3) { transform: translateY(-6px) rotate(-45
 .intro { top: var(--hero-top); width: fit-content; max-width: none; text-align: left; padding: 0.5em clamp(104px, 11.6vw, 178px) 0 0; font-family: var(--f-body); font-size: var(--fs-body); }
 .greet { margin: 0; font: inherit; font-weight: 400; line-height: 1.55; letter-spacing: 0.01em; }
 .greet span { display: block; white-space: nowrap; }
+.intro-sub { margin: 1em 0 0; max-width: 34ch; color: var(--muted); line-height: 1.55; text-wrap: pretty; }
 .greet .l1 { font-family: var(--f-serif); font-style: italic; font-size: 1.45em; line-height: 1.15; letter-spacing: 0; }
 /* all four lines share one left edge */
-.me { position: absolute; right: 0; top: -0.9em; width: 5.4em; aspect-ratio: 4 / 5; background: #e6e6e6; border: 1px dashed #9a9a9a; display: grid; place-items: center; text-align: center; font-family: var(--f-mono); font-size: 1em; line-height: 1.2; color: var(--muted); transform: rotate(6deg); box-shadow: 0 8px 18px -10px rgba(0,0,0,.5); }
-.me { font-family: var(--f-body); font-size: 12px; width: clamp(120px, 13vw, 200px); top: auto; bottom: clamp(19px, 1.8vw, 24px); }
+.me { position: absolute; right: 0; top: -0.9em; width: 5.4em; aspect-ratio: 4 / 5; background: #e6e6e6; border: 1px dashed #9a9a9a; display: grid; place-items: center; text-align: center; font-family: var(--f-mono); font-size: 1em; line-height: 1.2; color: var(--muted); box-shadow: 0 8px 18px -10px rgba(0,0,0,.5); }
+/* Desktop and medium: the photo runs exactly from the top of "Hey!" to the last line of the paragraph */
+.me.has-photo { border: 0; background: #ddd; padding: 0; rotate: 3deg; }
+/* Two small pink five-pointed stars on the photo's top-left and bottom-right corners */
+.me.has-photo::before, .me.has-photo::after { content: ""; position: absolute; z-index: 1; width: clamp(15.4px, 1.65vw, 22px); aspect-ratio: 1; background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath fill='%23f2a4c0' stroke='%23f2a4c0' stroke-width='1.4' stroke-linejoin='round' d='M12.00%200.60%20L14.82%208.72%20L23.41%208.89%20L16.57%2014.08%20L19.05%2022.31%20L12.00%2017.40%20L4.95%2022.31%20L7.43%2014.08%20L0.59%208.89%20L9.18%208.72Z'/%3E%3C/svg%3E") center / contain no-repeat; pointer-events: none; }
+.me.has-photo::before { left: 0; top: 0; translate: -50% -50%; }
+.me.has-photo::after { right: 0; bottom: 0; translate: 50% 50%; width: clamp(12.1px, 1.265vw, 16.5px); }
+.me.has-photo img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; object-position: center 30%; display: block; max-width: none; }
+/* The photo keeps a 4:5 portrait shape; its height matches the text, and its width (set by script as --me-w) follows from that */
+.me { font-family: var(--f-body); font-size: 12px; width: var(--me-w, clamp(120px, 13vw, 200px)); top: calc(0.5em * 16 / 12 + 0.3em); bottom: 0.5em; aspect-ratio: auto; }
+.intro { padding-right: calc(var(--me-w, clamp(120px, 13vw, 200px)) + clamp(24px, 3vw, 40px)); }
 #projects, #contact { scroll-margin-top: 110px; }
 .intro .pill { border: 1px solid var(--ink); border-radius: 999px; padding: 0 6px; text-decoration: none; }
 .intro u { text-decoration-thickness: 1px; text-underline-offset: 3px; }
@@ -196,14 +206,17 @@ header.open .menu-btn span:nth-child(3) { transform: translateY(-6px) rotate(-45
 /* Contact: a single post-it at the bottom center of the page */
 .contact { display: flex; flex-wrap: wrap; justify-content: center; align-items: center; gap: 0; padding-block: 50px 120px; }
 /* The note sits on top of the card and overlaps its edge: its right edge on wide screens, its bottom edge when stacked */
-.contact .postit { z-index: 2; margin: 90px 0 0 -18px; }
+.contact .postit { z-index: 2; margin: 50px 0 0 -48px; }
 @media (max-width: 780px) {
   .contact { flex-direction: column; }
   .contact .invite { width: min(440px, 88vw); align-self: flex-start; font-size: clamp(14px, 4vw, 16px); }
   .contact .invite .cap { padding: clamp(18px, 6vw, 30px) clamp(16px, 5.5vw, 28px) 6px; gap: 8px; }
   .contact .invite h3 { font-size: clamp(22px, 7.2vw, 30px); }
   .contact .invite .reserved { margin-top: 12px; padding: 10px; font-size: clamp(11px, 3.4vw, 14px); }
-  .contact .postit { align-self: flex-end; margin: -14px 2% 0 0; }
+  .contact .postit { align-self: flex-end; margin: -56px 2% 0 0; }
+}
+@media (max-width: 520px) {
+  .contact .postit { margin-top: -20px; }
   .contact { padding-bottom: 110px; }
 }
 .contact .invite .cap { padding-bottom: 30px; font-family: var(--f-body); font-size: var(--fs-body); line-height: 1.6; color: var(--ink); gap: 12px; }
@@ -258,7 +271,8 @@ footer { text-align: center; padding-block: 24px; font-family: var(--f-mono); fo
   .process { padding-block: 24px 36px; }
   /* Phones: the photo sits above the right end of the greeting, so the hero is never wider than the screen */
   .intro { padding: 118px 0 0; }
-  .me { width: 104px; top: 0; bottom: auto; right: 6px; }
+  .me { width: 104px; top: 0; bottom: auto; right: 6px; aspect-ratio: 4 / 5; }
+  .intro { padding-right: 0; }
 }
 @media (prefers-reduced-motion: reduce) {
   .ticker-track { animation: none; }
@@ -293,6 +307,11 @@ footer { text-align: center; padding-block: 24px; font-family: var(--f-mono); fo
 .piece-img { justify-self: start; width: min(100%, 860px, calc(62vh * var(--arn))); }
 .piece-img .ph-img { aspect-ratio: var(--ar); max-width: 100%; background: #e2e2e2; border-radius: 4px; display: grid; place-items: center; text-align: center; font-size: 13px; line-height: 1.4; color: var(--muted); }
 /* Touch screens have no hover, so sites carry a small hint under the image instead of the cursor label */
+a.site-cell { display: block; color: inherit; text-decoration: none; }
+.lattice-stack { gap: 0; }
+.samples-cap { margin: 22px 0 10px; font-size: 13px; color: var(--muted); }
+.samples .ph-img img { image-rendering: pixelated; }
+.dot-samples .ph-img img { image-rendering: auto; }
 .tap-hint { display: none; margin: 8px 0 0; font-size: 13px; color: var(--muted); }
 @media (hover: none), (pointer: coarse) { .tap-hint { display: block; } }
 .piece-img .bar { display: flex; gap: 6px; padding: 0 0 10px 2px; }
@@ -306,8 +325,8 @@ footer { text-align: center; padding-block: 24px; font-family: var(--f-mono); fo
 .row-cell .ph-img { aspect-ratio: var(--ar); }
 /* A set with more photographs adds rows under the first, all the same total width */
 .photo-stack { display: grid; gap: 12px; }
-/* Phones: the photographs run full width, one above another */
-@media (max-width: 720px) { .photo-stack, .photo-stack .photo-row { display: flex; flex-direction: column; gap: 14px; } .photo-stack .ph-img { flex: none; width: 100%; } }
+/* Phones: the photographs keep their rows, three across, like the posters, with tighter gaps */
+@media (max-width: 720px) { .photo-stack, .photo-row { gap: 8px; } }
 /* Phones: landscape site screenshots would be tiny three across, so they stack */
 @media (max-width: 720px) { .site-row { flex-direction: column; gap: 22px; } .site-row > .row-cell { flex: none; } }
 .thumb-in img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; }
@@ -377,6 +396,7 @@ footer { text-align: center; padding-block: 24px; font-family: var(--f-mono); fo
 .strip::before { content: ""; position: absolute; inset: 0; background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.95' numOctaves='2' stitchTiles='stitch'/%3E%3CfeColorMatrix values='0 0 0 0 1 0 0 0 0 1 0 0 0 0 1 0 0 0 .55 0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E"); opacity: .16; mix-blend-mode: screen; pointer-events: none; }
 .strip .edge-text { position: absolute; top: 7.8cqw; bottom: 7.8cqw; right: 7.8cqw; writing-mode: vertical-rl; font-family: var(--f-mono); font-size: 3cqw; letter-spacing: .28em; color: #d08a3e; opacity: .75; white-space: nowrap; overflow: hidden; pointer-events: none; }
 .strip .frame { position: relative; aspect-ratio: 5 / 4; font-size: clamp(10px, 5.2cqw, 14px) !important; background: linear-gradient(160deg, #dcdad6, #c9c6c1); box-shadow: inset 0 0 0 1px rgba(0,0,0,.35), inset 0 0 14px rgba(0,0,0,.18); display: grid; place-items: center; color: #6b6762; font-size: 12px; }
+.strip .frame img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; display: block; }
 .strip .frame::after { content: ""; position: absolute; inset: 0; background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.95' numOctaves='2' stitchTiles='stitch'/%3E%3CfeColorMatrix values='0 0 0 0 1 0 0 0 0 1 0 0 0 0 1 0 0 0 .55 0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E"); opacity: .12; mix-blend-mode: multiply; pointer-events: none; }
 /* In two columns the strip takes no height of its own in the grid, so measuring the left column is never skewed by the strip */
 @media (min-width: 561px) { .strip-wrap { height: 0; } }
@@ -703,7 +723,7 @@ body:has(main.cs:not([hidden])) > footer, body:has(#play-page:not([hidden])) > f
 .cursor.is-card .arrow { opacity: 1; transform: translate(-50%, -50%) scale(1); }
 /* Sites on the Play page: the arrow cursor plus "click to play now" curved once along the top-left quarter of a circle around it */
 .cursor .ring { position: absolute; left: 0; top: 0; width: 130px; height: 130px; opacity: 0; transform: translate(-50%, -50%) scale(.6); transition: transform .35s cubic-bezier(.2,.8,.2,1), opacity .25s ease; overflow: visible; }
-.cursor .ring text { fill: #8f8f8f; font-family: var(--f-body); font-size: 7.5px; font-weight: 500; letter-spacing: .03em; }
+.cursor .ring text { fill: #8f8f8f; font-family: var(--f-body); font-size: 9.4px; font-weight: 500; letter-spacing: .03em; }
 .cursor.is-site .ring { opacity: 1; transform: translate(-50%, -50%) scale(1); }
 .cursor.is-text .dot { transform: translate(-50%, -50%) scale(0); }
 html.has-cursor, html.has-cursor * { cursor: none !important; }
@@ -941,8 +961,9 @@ html.has-cursor textarea, html.has-cursor input[type=text], html.has-cursor inpu
 <main id="top">
   <section class="work gutter" id="work">
     <div class="intro">
-      <h1 class="greet"><span class="l1">Hey!</span><span class="l2">I&rsquo;m Saadhvi Kompella,</span><span class="l3">a designer pursuing</span><span class="l4">Human-Computer Interaction.</span></h1>
-      <div class="me" aria-label="Photo placeholder">Your<br>photo</div>
+      <h1 class="greet"><span class="l1">Hey!</span><span class="l2">I&rsquo;m Saadhvi Kompella,</span><span class="l3">a product designer studying</span><span class="l4">Human-Computer Interaction.</span></h1>
+      <p class="intro-sub">I design, research and prototype. Right now I&rsquo;m exploring assistive and neuro-adaptive technology, and the role music plays in memory for people with dementia.</p>
+      <div class="me has-photo"><img src="img/hero-me-2.jpg" width="631" height="789" alt="Portrait of Saadhvi Kompella smiling, head tilted, seated at a table"></div>
     </div>
 
     <div class="cards" id="projects">
@@ -985,7 +1006,7 @@ html.has-cursor textarea, html.has-cursor input[type=text], html.has-cursor inpu
   </section>
 
   <section class="notes gutter" id="notes" aria-labelledby="notes-title">
-    <div class="notes-head"><h2 id="notes-title">Leave a thought</h2><p>Read what others have left (drag the cards around to see them all), then pick a card and write your own. Notes are anonymous: no names are kept or shown.</p></div>
+    <div class="notes-head"><h2 id="notes-title">Leave a thought</h2><p>A small table of words left behind by people passing through. Move the cards around, read what others wrote, then pick one and leave yours. No names, just thoughts.</p></div>
     <div class="board" hidden>
       <p class="board-count vh" id="wall-count" aria-live="polite">Loading notes&hellip;</p>
       <ul class="wall" id="wall" aria-label="Notes left by visitors"></ul>
@@ -1034,34 +1055,38 @@ html.has-cursor textarea, html.has-cursor input[type=text], html.has-cursor inpu
       <svg class="dots dots-wide" viewBox="0 0 1010 560" role="img" aria-label="The word Play drawn as a connect-the-dots puzzle"><path class="ink-line" pathLength="1" style="animation-duration:1.1s;animation-delay:0.4s" d="M118.0,420.0 C111.0,377.3 109.2,331.8 114.0,290.0 C111.9,244.2 113.2,195.8 122.0,152.0 C152.2,148.7 182.9,160.4 212.0,160.0 C229.5,173.7 241.6,194.2 258.0,208.0 C257.3,226.1 256.4,245.3 250.0,262.0 C231.9,269.2 217.0,284.1 200.0,292.0 C171.6,294.2 141.4,294.3 114.0,290.0"/><path class="ink-line" pathLength="1" style="animation-duration:0.7s;animation-delay:1.6s" d="M350.0,148.0 C341.3,194.7 354.8,244.8 346.0,290.0 C352.5,332.0 355.9,376.8 352.0,418.0 C391.3,413.7 431.9,428.1 470.0,424.0"/><path class="ink-line" pathLength="1" style="animation-duration:0.9s;animation-delay:2.4s" d="M560.0,422.0 C582.0,381.0 595.7,334.5 602.0,290.0 C610.8,241.7 624.6,191.9 648.0,150.0 C660.2,198.7 676.0,249.2 700.0,292.0 C706.2,336.7 735.6,376.7 742.0,420.0"/><path class="ink-line" pathLength="1" style="animation-duration:0.3s;animation-delay:3.3s" d="M602.0,290.0 C634.3,294.2 668.6,295.1 700.0,292.0"/><path class="ink-line" pathLength="1" style="animation-duration:0.6s;animation-delay:3.7s" d="M800.0,152.0 C818.8,198.6 855.3,239.0 872.0,285.0 C905.4,244.4 929.8,195.2 948.0,148.0"/><path class="ink-line" pathLength="1" style="animation-duration:0.35s;animation-delay:4.3s" d="M872.0,285.0 C863.2,330.0 874.0,378.3 868.0,422.0"/><circle cx="118" cy="420" r="5"/><text x="128" y="411">1</text><circle cx="114" cy="290" r="5"/><text x="124" y="281">2</text><circle cx="122" cy="152" r="5"/><text x="132" y="143">3</text><circle cx="212" cy="160" r="5"/><text x="222" y="151">4</text><circle cx="258" cy="208" r="5"/><text x="268" y="199">5</text><circle cx="250" cy="262" r="5"/><text x="260" y="253">6</text><circle cx="200" cy="292" r="5"/><text x="210" y="283">7</text><circle cx="350" cy="148" r="5"/><text x="360" y="139">8</text><circle cx="346" cy="290" r="5"/><text x="356" y="281">9</text><circle cx="352" cy="418" r="5"/><text x="362" y="409">10</text><circle cx="470" cy="424" r="5"/><text x="480" y="415">11</text><circle cx="560" cy="422" r="5"/><text x="570" y="413">12</text><circle cx="602" cy="290" r="5"/><text x="612" y="281">13</text><circle cx="648" cy="150" r="5"/><text x="658" y="141">14</text><circle cx="700" cy="292" r="5"/><text x="710" y="283">15</text><circle cx="742" cy="420" r="5"/><text x="752" y="411">16</text><circle cx="800" cy="152" r="5"/><text x="810" y="143">17</text><circle cx="872" cy="285" r="5"/><text x="882" y="276">18</text><circle cx="948" cy="148" r="5"/><text x="958" y="139">19</text><circle cx="868" cy="422" r="5"/><text x="878" y="413">20</text><circle cx="48" cy="84" r="5"/><text x="58" y="75">21</text><circle cx="292" cy="66" r="5"/><text x="302" y="57">22</text><circle cx="520" cy="96" r="5"/><text x="530" y="87">23</text><circle cx="770" cy="62" r="5"/><text x="780" y="53">24</text><circle cx="972" cy="300" r="5"/><text x="982" y="291">25</text><circle cx="36" cy="318" r="5"/><text x="46" y="309">26</text><circle cx="300" cy="506" r="5"/><text x="310" y="497">27</text><circle cx="516" cy="262" r="5"/><text x="526" y="253">28</text><circle cx="646" cy="512" r="5"/><text x="656" y="503">29</text><circle cx="912" cy="500" r="5"/><text x="922" y="491">30</text><circle cx="452" cy="170" r="5"/><text x="462" y="161">31</text><circle cx="176" cy="508" r="5"/><text x="186" y="499">32</text><circle cx="978" cy="84" r="5"/><text x="988" y="75">33</text><circle cx="470" cy="330" r="5"/><text x="480" y="321">34</text><circle cx="58" cy="470" r="5"/><text x="68" y="461">35</text></svg>
     <svg class="dots dots-tall" viewBox="0 0 500 1000" role="img" aria-label="The word Play drawn as a connect-the-dots puzzle"><path class="ink-line" pathLength="1" style="animation-duration:1.1s;animation-delay:0.4s" d="M153.2,312.0 C157.2,277.5 145.9,241.4 150.0,208.0 C156.4,171.8 148.2,132.6 156.4,97.6 C179.9,102.2 205.6,99.3 228.4,104.0 C238.3,118.8 256.3,127.4 265.2,142.4 C266.2,157.1 262.8,172.1 258.8,185.6 C247.5,196.7 229.8,198.9 218.8,209.6 C196.0,212.4 172.1,205.0 150.0,208.0"/><path class="ink-line" pathLength="1" style="animation-duration:0.7s;animation-delay:1.6s" d="M303.2,252.0 C307.9,289.7 295.4,329.1 300.0,365.6 C306.4,399.2 297.2,435.5 304.8,468.0 C335.7,475.3 369.1,468.2 399.2,472.8"/><path class="ink-line" pathLength="1" style="animation-duration:0.9s;animation-delay:2.4s" d="M72.0,701.6 C88.0,668.3 90.0,628.2 105.6,596.0 C110.6,556.7 126.2,518.4 142.4,484.0 C150.5,523.6 176.1,559.3 184.0,597.6 C188.8,633.5 202.3,668.7 217.6,700.0"/><path class="ink-line" pathLength="1" style="animation-duration:0.3s;animation-delay:3.3s" d="M105.6,596.0 C131.4,600.0 159.0,592.3 184.0,597.6"/><path class="ink-line" pathLength="1" style="animation-duration:0.6s;animation-delay:3.7s" d="M292.0,709.2 C314.9,742.2 327.8,783.4 349.6,815.6 C362.8,775.7 384.6,737.6 410.4,706.0"/><path class="ink-line" pathLength="1" style="animation-duration:0.35s;animation-delay:4.3s" d="M349.6,815.6 C353.9,851.9 355.0,890.4 346.4,925.2"/><circle cx="153" cy="312" r="5.5"/><text x="163" y="303">1</text><circle cx="150" cy="208" r="5.5"/><text x="160" y="199">2</text><circle cx="156" cy="98" r="5.5"/><text x="166" y="89">3</text><circle cx="228" cy="104" r="5.5"/><text x="238" y="95">4</text><circle cx="265" cy="142" r="5.5"/><text x="275" y="133">5</text><circle cx="259" cy="186" r="5.5"/><text x="269" y="177">6</text><circle cx="219" cy="210" r="5.5"/><text x="229" y="201">7</text><circle cx="303" cy="252" r="5.5"/><text x="313" y="243">8</text><circle cx="300" cy="366" r="5.5"/><text x="310" y="357">9</text><circle cx="305" cy="468" r="5.5"/><text x="315" y="459">10</text><circle cx="399" cy="473" r="5.5"/><text x="409" y="464">11</text><circle cx="72" cy="702" r="5.5"/><text x="82" y="693">12</text><circle cx="106" cy="596" r="5.5"/><text x="116" y="587">13</text><circle cx="142" cy="484" r="5.5"/><text x="152" y="475">14</text><circle cx="184" cy="598" r="5.5"/><text x="194" y="589">15</text><circle cx="218" cy="700" r="5.5"/><text x="228" y="691">16</text><circle cx="292" cy="709" r="5.5"/><text x="302" y="700">17</text><circle cx="350" cy="816" r="5.5"/><text x="360" y="807">18</text><circle cx="410" cy="706" r="5.5"/><text x="420" y="697">19</text><circle cx="346" cy="925" r="5.5"/><text x="356" y="916">20</text><circle cx="330" cy="70" r="5.5"/><text x="340" y="61">21</text><circle cx="440" cy="52" r="5.5"/><text x="450" y="43">22</text><circle cx="452" cy="196" r="5.5"/><text x="462" y="187">23</text><circle cx="64" cy="150" r="5.5"/><text x="74" y="141">24</text><circle cx="58" cy="334" r="5.5"/><text x="68" y="325">25</text><circle cx="184" cy="404" r="5.5"/><text x="194" y="395">26</text><circle cx="44" cy="452" r="5.5"/><text x="54" y="443">27</text><circle cx="444" cy="404" r="5.5"/><text x="454" y="395">28</text><circle cx="336" cy="566" r="5.5"/><text x="346" y="557">29</text><circle cx="452" cy="628" r="5.5"/><text x="462" y="619">30</text><circle cx="258" cy="644" r="5.5"/><text x="268" y="635">31</text><circle cx="60" cy="776" r="5.5"/><text x="70" y="767">32</text><circle cx="182" cy="884" r="5.5"/><text x="192" y="875">33</text><circle cx="450" cy="944" r="5.5"/><text x="460" y="935">34</text><circle cx="216" cy="726" r="5.5"/><text x="226" y="717">35</text></svg>
       <div class="floaters" id="floaters">
-        <a class="thumb" href="#piece-1" style="--x:-18.5;--y:2.2;--w:26.7;--ar:16/10;--rot:-6deg;--px:60;--py:5;--pw:34" data-depth="0.6" aria-label="Jump to piece 1"><span class="thumb-in"><span>16 : 10</span></span></a>
+        <a class="thumb" href="#piece-1" style="--x:-14;--y:2.2;--w:17;--ar:1/1;--rot:-6deg;--px:68;--py:6;--pw:23" data-depth="0.6" aria-label="Jump to Recursive Lattice Gen"><span class="thumb-in"><img src="img/lattice-sample-1.png" alt="A raspberry and sky-blue lattice pattern made with Recursive Lattice Gen" decoding="async"></span></a>
         <a class="thumb" href="#piece-2" style="--x:96;--y:-0.3;--w:14.4;--ar:2/3;--rot:5deg;--px:4;--py:-20;--pw:18" data-depth="1.1" aria-label="Jump to piece 2"><span class="thumb-in"><img src="img/play-1.jpg" alt="" decoding="async"></span></a>
         <a class="thumb wide-only" href="#piece-7" style="--x:40.7;--y:-3.7;--w:14.4;--ar:4/5;--rot:-5deg" data-depth="1.3" aria-label="Jump to piece 7"><span class="thumb-in"><img src="img/play-4.jpg" alt="" decoding="async"></span></a>
-        <a class="thumb wide-only" href="#piece-3" style="--x:101;--y:36.3;--w:16.7;--ar:3/2;--rot:-4deg" data-depth="0.8" aria-label="Jump to piece 3"><span class="thumb-in"><img src="img/play-2.jpg" alt="" decoding="async"></span></a>
+        <a class="thumb wide-only" href="#piece-dot" style="--x:101;--y:36.3;--w:12;--ar:4/5;--rot:-4deg" data-depth="0.8" aria-label="Jump to Dot Type Studio"><span class="thumb-in"><img src="img/dottype-sample-1.jpg" alt="Dot Type poster: fragmented memory in white dots on electric blue" decoding="async"></span></a>
         <a class="thumb" href="#piece-4" style="--x:-14.4;--y:44.6;--w:18.9;--ar:4/3;--rot:4deg;--px:58;--py:106;--pw:30" data-depth="1.2" aria-label="Jump to piece 4"><span class="thumb-in"><img src="img/play-3.jpg" alt="" decoding="async"></span></a>
         <a class="thumb" href="#piece-6" style="--x:25;--y:50;--w:10.7;--ar:5/7;--rot:6deg;--px:10;--py:152;--pw:16" data-depth="0.9" aria-label="Jump to piece 6"><span class="thumb-in"><img src="img/play-5.jpg" alt="" decoding="async"></span></a>
-        <a class="thumb" href="#piece-5" style="--x:78;--y:48;--w:20;--ar:16/10;--rot:-3deg;--px:55;--py:194;--pw:28" data-depth="0.5" aria-label="Jump to piece 5"><span class="thumb-in"><span>16 : 10</span></span></a>
+        <a class="thumb" href="#piece-3-a" style="--x:82;--y:46;--w:12.5;--ar:3/4;--rot:-3deg;--px:60;--py:190;--pw:22" data-depth="0.5" aria-label="Jump to Kutch photographs"><span class="thumb-in"><img src="img/play-9.jpg" alt="A photograph from Kutch, Gujarat" decoding="async"></span></a>
         <a class="thumb" href="#piece-8" style="--x:-18.5;--y:25;--w:11.1;--ar:1/1;--rot:3deg;--px:5;--py:70;--pw:20" data-depth="0.7" aria-label="Jump to piece 8"><span class="thumb-in"><img src="img/play-6.jpg" alt="" decoding="async"></span></a>
       </div>
     </div>
   </section>
   <div class="pieces">
     <section class="pcat gutter" aria-label="Play pieces">
+      <article class="piece is-site" id="piece-1">
+        <div class="piece-text"><h3>Recursive Lattice Gen</h3><p>A small generative tool that grows pixel lattices from simple rules, like the golden-ratio spirals of a sunflower. Pick an algorithm, tune the intensity and colours, animate it, then save the pattern as an image.</p><p class="meta">2026 &middot; Built with Gemini</p></div>
+        <div class="piece-img photo-stack lattice-stack" style="--arn:1.6"><div class="photo-row site-row"><a class="row-cell site-cell" id="piece-5" href="https://gemini.google.com/share/e5942122da13" target="_blank" rel="noopener" aria-label="Open Recursive Lattice Gen in a new tab" style="--ar:16/10;--arn:1.6"><div class="bar" aria-hidden="true"><i></i><i></i><i></i></div><div class="ph-img"><img src="img/play-site-lattice.jpg" width="1600" height="1000" alt="Recursive Lattice Gen: a black-and-white Fibonacci lattice pattern beside its controls for algorithm, intensity, palette, Animate, Random and Save Image" loading="lazy" decoding="async"></div><p class="tap-hint">Tap to play now</p></a></div><p class="samples-cap">Patterns made with the tool</p><div class="photo-row samples"><div class="ph-img" style="--ar:1/1;--arn:1"><img src="img/lattice-sample-1.png" width="600" height="600" alt="Lattice pattern in deep raspberry on pale sky blue" loading="lazy" decoding="async"></div><div class="ph-img" style="--ar:1/1;--arn:1"><img src="img/lattice-sample-2.png" width="600" height="600" alt="Lattice pattern in navy on pale blue" loading="lazy" decoding="async"></div><div class="ph-img" style="--ar:1/1;--arn:1"><img src="img/lattice-sample-3.png" width="600" height="600" alt="Lattice pattern in tomato red on pale sage green" loading="lazy" decoding="async"></div></div></div>
+      </article>
+      <article class="piece is-site" id="piece-dot">
+        <div class="piece-text"><h3>Dot Type Studio</h3><p>A tool for turning words into dots. Type a line, shape how the letters break into a dot grid, layer in noise and colour, animate each word on its own, then export a looping video.</p><p class="meta">2026 &middot; Built with Claude</p></div>
+        <div class="piece-img photo-stack lattice-stack" style="--arn:1.6"><div class="photo-row site-row"><a class="row-cell site-cell" href="https://saadhvikompella.github.io/dot-type/" target="_blank" rel="noopener" aria-label="Open Dot Type Studio in a new tab" style="--ar:16/10;--arn:1.6"><div class="bar" aria-hidden="true"><i></i><i></i><i></i></div><div class="ph-img"><img src="img/play-site-dottype.jpg" width="1600" height="1000" alt="Dot Type Studio: the words be kind built from dark red dots on a pink dotted background, beside panels for text, type and dot settings" loading="lazy" decoding="async"></div><p class="tap-hint">Tap to play now</p></a></div><p class="samples-cap">Posters made with the tool</p><div class="photo-row samples dot-samples"><div class="ph-img" style="--ar:4/5;--arn:0.8"><img src="img/dottype-sample-1.jpg" width="800" height="1000" alt="Dot Type poster: the words fragmented memory in white dots on electric blue" loading="lazy" decoding="async"></div><div class="ph-img" style="--ar:4/5;--arn:0.8"><img src="img/dottype-sample-2.jpg" width="800" height="1000" alt="Dot Type poster: the words where is frank ocean in white dots on orange" loading="lazy" decoding="async"></div><div class="ph-img" style="--ar:4/5;--arn:0.8"><img src="img/dottype-sample-3.jpg" width="800" height="1000" alt="Dot Type poster: the words little lies we tell ourselves in lilac dots on deep indigo" loading="lazy" decoding="async"></div></div></div>
+      </article>
       <article class="piece" id="piece-3">
         <div class="piece-text"><h3>Kutch</h3><p>Photographs from an ethnographic study in Kutch, Gujarat, documenting livelihoods and crafts that families have passed down through generations.</p><p class="meta">October 2022 &middot; Nikon D3300</p></div>
         <div class="piece-img photo-stack" style="--arn:2.249"><div class="photo-row"><div class="ph-img" id="piece-3-a" style="--ar:544/723;--arn:0.752"><img src="img/play-2.jpg" width="544" height="723" alt="Photograph from the Kutch ethnographic study" loading="lazy" decoding="async"></div><div class="ph-img" id="piece-7" style="--ar:786/1054;--arn:0.746"><img src="img/play-4.jpg" width="786" height="1054" alt="Photograph from the Kutch ethnographic study" loading="lazy" decoding="async"></div><div class="ph-img" id="piece-11" style="--ar:793/1056;--arn:0.751"><img src="img/play-7.jpg" width="793" height="1056" alt="Photograph from the Kutch ethnographic study" loading="lazy" decoding="async"></div></div><div class="photo-row row-more"><div class="ph-img" style="--ar:825/1100;--arn:0.750"><img src="img/play-9.jpg" width="825" height="1100" alt="Photograph from the Kutch ethnographic study" loading="lazy" decoding="async"></div><div class="ph-img" style="--ar:825/1100;--arn:0.750"><img src="img/play-10.jpg" width="825" height="1100" alt="Photograph from the Kutch ethnographic study" loading="lazy" decoding="async"></div><div class="ph-img" style="--ar:624/1100;--arn:0.567"><img src="img/play-12.jpg" width="624" height="1100" alt="Photograph from the Kutch ethnographic study" loading="lazy" decoding="async"></div></div></div>
       </article>
       <article class="piece" id="piece-2">
-        <div class="piece-text"><h3>Posters</h3><p>A sentence or two about these posters, what each was for and how you approached it.</p><p class="meta">Month 2026 &middot; Tools used</p></div>
-        <div class="piece-img photo-row" style="--arn:2.124"><div class="ph-img" id="piece-2-a" style="--ar:632/891;--arn:0.709"><img src="img/play-1.jpg" width="632" height="891" alt="Poster from Saadhvi's miscellaneous work" loading="lazy" decoding="async"></div><div class="ph-img" id="piece-6" style="--ar:749/1058;--arn:0.708"><img src="img/play-5.jpg" width="749" height="1058" alt="Poster from Saadhvi's miscellaneous work" loading="lazy" decoding="async"></div><div class="ph-img" id="piece-10" style="--ar:1/1.414;--arn:0.707"><span>1 : 1.414<br>image placeholder</span></div></div>
+        <div class="piece-text"><h3>Posters</h3><p>Some of my earliest pieces. Making these posters is how I first learned my way around design tools, and the technical workflows behind print and digital graphics.</p><p class="meta">Earlier work &middot; Adobe Photoshop, Illustrator</p></div>
+        <div class="piece-img photo-row" style="--arn:2.131"><div class="ph-img" id="piece-2-a" style="--ar:632/891;--arn:0.709"><img src="img/play-1.jpg" width="632" height="891" alt="Poster from Saadhvi's miscellaneous work" loading="lazy" decoding="async"></div><div class="ph-img" id="piece-6" style="--ar:749/1058;--arn:0.708"><img src="img/play-5.jpg" width="749" height="1058" alt="Poster from Saadhvi's miscellaneous work" loading="lazy" decoding="async"></div><div class="ph-img" id="piece-10" style="--ar:5/7;--arn:0.714"><img src="img/play-manic.jpg" width="1000" height="1400" alt="Collage poster for Halsey's album Manic: torn photographs of faces in pink and blue, with the tracklist below" loading="lazy" decoding="async"></div></div>
       </article>
       <article class="piece" id="piece-4">
-        <div class="piece-text"><h3>Illustrations</h3><p>A sentence or two about these illustrations and what you were exploring.</p><p class="meta">Month 2026 &middot; Tools used</p></div>
-        <div class="piece-img photo-row" style="--arn:1.695"><div class="ph-img" id="piece-4-a" style="--ar:736/1055;--arn:0.698"><img src="img/play-3.jpg" width="736" height="1055" alt="Illustration from Saadhvi's miscellaneous work" loading="lazy" decoding="async"></div><div class="ph-img" id="piece-8" style="--ar:765/767;--arn:0.997"><img src="img/play-6.jpg" width="765" height="767" alt="Illustration from Saadhvi's miscellaneous work" loading="lazy" decoding="async"></div></div>
-      </article>
-      <article class="piece is-site" id="piece-1">
-        <div class="piece-text"><h3>Site</h3><p>A sentence or two about this site, what it does and what you learned building it.</p><p class="meta">Month 2026 &middot; Tools used</p></div>
-        <div class="piece-img photo-row site-row" style="--arn:1.6"><div class="row-cell site-cell" id="piece-5" style="--ar:16/10;--arn:1.6"><div class="bar" aria-hidden="true"><i></i><i></i><i></i></div><div class="ph-img"><span>16 : 10<br>screenshot placeholder</span></div><p class="tap-hint">Click to play now</p></div></div>
+        <div class="piece-text"><h3>Illustrations</h3><p>Early illustrations, made while I was getting to grips with digital drawing: building shapes, layering colour and working out how a picture holds together.</p><p class="meta">Earlier work &middot; Adobe Illustrator, Procreate</p></div>
+        <div class="piece-img photo-row" style="--arn:2.402"><div class="ph-img" id="piece-4-a" style="--ar:736/1055;--arn:0.698"><img src="img/play-3.jpg" width="736" height="1055" alt="Illustration from Saadhvi's miscellaneous work" loading="lazy" decoding="async"></div><div class="ph-img" id="piece-8" style="--ar:765/767;--arn:0.997"><img src="img/play-6.jpg" width="765" height="767" alt="Illustration from Saadhvi's miscellaneous work" loading="lazy" decoding="async"></div><div class="ph-img" id="piece-4-c" style="--ar:910/1287;--arn:0.707"><img src="img/play-euphoria.jpg" width="910" height="1287" alt="Illustrated poster for Euphoria: a figure in layered red, rust and violet shapes on a dark background" loading="lazy" decoding="async"></div></div>
       </article>
     </section>
   </div>
@@ -1468,7 +1493,7 @@ html.has-cursor textarea, html.has-cursor input[type=text], html.has-cursor inpu
           <g class="trait"><text x="58" y="336" class="tl" text-anchor="middle">ANALYTICAL</text><line x1="150" y1="332" x2="490" y2="332"/><circle cx="190.8" cy="332" r="4.5" class="sd"/><circle cx="388.0" cy="332" r="4.5" class="sd"/><circle cx="306.4" cy="332" r="9" class="bd"/><text x="508" y="336" class="tl">INTUITIVE</text></g>
         </svg>
       </figure>
-    <div class="strip-wrap" aria-label="Photo strip placeholder"><div class="strip-box"><span class="strip-shadow" aria-hidden="true"></span><div class="strip"><span class="edge-text" aria-hidden="true">KODAK 400TX &#9656; 12 &#9656; 12A &#9656; 13 &#9656; 13A</span><div class="frame"><span>Photo 1</span></div><div class="frame"><span>Photo 2</span></div><div class="frame"><span>Photo 3</span></div></div></div></div>
+    <div class="strip-wrap" aria-label="Three photos of Saadhvi"><div class="strip-box"><span class="strip-shadow" aria-hidden="true"></span><div class="strip"><span class="edge-text" aria-hidden="true">KODAK 400TX &#9656; 12 &#9656; 12A &#9656; 13 &#9656; 13A</span><div class="frame"><img src="img/about-1.jpg" width="900" height="643" alt="Saadhvi smiling, head tilted, against a grey wall" decoding="async"></div><div class="frame"><img src="img/about-3.jpg" width="900" height="643" alt="Saadhvi laughing and looking down, hands in her pockets" decoding="async"></div><div class="frame"><img src="img/about-2.jpg" width="900" height="643" alt="Saadhvi pulling a playful face, chin resting on her hands" decoding="async"></div></div></div></div>
   </section>
 
 </main>
@@ -1632,6 +1657,7 @@ html.has-cursor textarea, html.has-cursor input[type=text], html.has-cursor inpu
   }
   document.addEventListener("click", function (e) {
     var im = e.target.closest && e.target.closest("main.cs img, #play-page .piece-img img");
+    if (im && im.closest(".site-cell")) im = null;   // the site screenshot is a link, not a zoomable image
     if (!im || !phoneMQ.matches) return;
     e.preventDefault(); openLightbox(im.currentSrc || im.src, im.alt);
   });
@@ -1949,9 +1975,15 @@ html.has-cursor textarea, html.has-cursor input[type=text], html.has-cursor inpu
   // About chart: trim the drawing's left edge to its widest left-hand label, so the chart lines up with the text above it.
   function alignViz() {
     var svg = document.querySelector(".traits"); if (!svg || aboutPage.hidden) return;
-    var minX = Infinity;
-    svg.querySelectorAll('.tl[text-anchor="middle"]').forEach(function (t) { minX = Math.min(minX, t.getBBox().x); });
-    if (isFinite(minX)) svg.setAttribute("viewBox", minX.toFixed(1) + " 0 " + (668 - minX).toFixed(1) + " " + svg.viewBox.baseVal.height);
+    // Fit the chart to its labels on both sides, so the left labels start at the left margin and the right labels end at the right margin
+    // Right-hand labels: centre them on one shared line, mirroring the left-hand labels
+    var right = [].filter.call(svg.querySelectorAll(".tl"), function (t) { return t.getAttribute("text-anchor") !== "middle" || t.dataset.r; });
+    var rw = 0;
+    right.forEach(function (t) { t.dataset.r = 1; t.setAttribute("text-anchor", "start"); t.setAttribute("x", 508); rw = Math.max(rw, t.getBBox().width); });
+    right.forEach(function (t) { t.setAttribute("text-anchor", "middle"); t.setAttribute("x", (508 + rw / 2).toFixed(1)); });
+    var minX = Infinity, maxX = -Infinity;
+    svg.querySelectorAll(".tl").forEach(function (t) { var b = t.getBBox(); minX = Math.min(minX, b.x); maxX = Math.max(maxX, b.x + b.width); });
+    if (isFinite(minX) && isFinite(maxX)) svg.setAttribute("viewBox", minX.toFixed(1) + " 0 " + (maxX - minX).toFixed(1) + " " + svg.viewBox.baseVal.height);
     fitStrip();
   }
   window.addEventListener("resize", alignViz);
@@ -2032,7 +2064,7 @@ html.has-cursor textarea, html.has-cursor input[type=text], html.has-cursor inpu
       cur.classList.add("on");
       var t = e.target;
       var mode = t.closest("textarea, input[type=text], input[type=email]") ? "text"
-        : t.closest(".piece.is-site") ? "site"
+        : t.closest(".piece.is-site .site-cell") ? "site"
         : t.closest(".card:not(.invite), .thumb, .bm-col") ? "card"
         : t.closest("a, button, label") ? "link" : "";
       cur.classList.toggle("is-dark", !!t.closest("header, .bm-col"));
@@ -2341,6 +2373,44 @@ html.has-cursor textarea, html.has-cursor input[type=text], html.has-cursor inpu
 </script>
 
 
+<script>
+// Hero photo: match the text's height and keep a 4:5 portrait shape at every width
+(function () {
+  var intro = document.querySelector(".intro"), me = intro && intro.querySelector(".me"); if (!me) return;
+  function fit() {
+    if (matchMedia("(max-width: 640px)").matches) { intro.style.removeProperty("--me-w"); return; }
+    var h = me.getBoundingClientRect().height; if (h > 0) intro.style.setProperty("--me-w", Math.round(h * 0.8) + "px");
+  }
+  fit(); addEventListener("resize", fit); if (document.fonts) document.fonts.ready.then(fit);
+  requestAnimationFrame(function () { fit(); requestAnimationFrame(fit); });
+  // Refit whenever the text block changes size or the homepage is shown again (it measures 0 while hidden)
+  if (window.ResizeObserver) new ResizeObserver(function () { fit(); }).observe(intro);
+  addEventListener("hashchange", function () { setTimeout(fit, 50); });
+})();
+</script>
+<script>
+// Contact: the pink note overlaps the card's edge but always stops short of the card's text
+(function () {
+  var sec = document.getElementById("contact"); if (!sec) return;
+  var card = sec.querySelector(".invite"), note = sec.querySelector(".postit"); if (!card || !note) return;
+  // Measured from layout (not from the screen), so the cards' scroll animation can't skew it: the free strip is the
+  // space between the end of the text column and the card's edge. The note overlaps that strip and stops 18px short of the text.
+  function fit() {
+    var cap = card.querySelector(".cap"); if (!cap) return;
+    var ps = getComputedStyle(cap), stacked = getComputedStyle(sec).flexDirection === "column";
+    if (!stacked) {
+      var freeX = card.offsetWidth - (cap.offsetLeft + cap.offsetWidth) + parseFloat(ps.paddingRight);
+      note.style.marginTop = ""; note.style.marginLeft = (-Math.max(0, Math.min(60, freeX - 18))) + "px";
+    } else {
+      var last = cap.lastElementChild, used = last ? last.offsetTop + last.offsetHeight : cap.offsetHeight;
+      var freeY = card.offsetHeight - (cap.offsetTop + used);
+      note.style.marginLeft = ""; note.style.marginTop = (-Math.max(0, Math.min(60, freeY - 14))) + "px";
+    }
+  }
+  fit(); addEventListener("resize", fit); if (document.fonts) document.fonts.ready.then(fit);
+  new IntersectionObserver(function (es) { if (es[0].isIntersecting) fit(); }).observe(sec);
+})();
+</script>
 <style>
 /* Remove control on your own notes: a small cross that grows into "Remove for good?" on the first click */
 .wall > li .memo-x { position: absolute; top: -11px; right: -11px; z-index: 2; display: inline-flex; align-items: center; gap: 6px; height: 26px; max-width: 26px; padding: 0 0 0 7px; border: 0; border-radius: 999px; overflow: hidden; background: var(--ink); color: #fff; font: 600 11px/1 var(--f-body); letter-spacing: .02em; white-space: nowrap; cursor: pointer; box-shadow: 0 4px 10px rgba(0,0,0,.2); transition: max-width .35s cubic-bezier(.2,.8,.2,1), padding .35s cubic-bezier(.2,.8,.2,1), background-color .25s; }
