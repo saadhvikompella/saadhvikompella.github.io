@@ -1840,15 +1840,22 @@ html.has-cursor textarea, html.has-cursor input[type=text], html.has-cursor inpu
     nudge(d / 600 * (1 + Math.min(Math.abs(d) / 80, 1.5)));
   }, { passive: false });
   var touchY = null;
-  window.addEventListener("touchstart", function (e) { touchY = e.touches[0].clientY; }, { passive: true });
+  // Phones: like the desktop wheel, the bar follows the swipe's speed, so one more deliberate swipe (or a quick flick) opens the next project.
+  var tVel = 0, tT = 0;
+  window.addEventListener("touchstart", function (e) { touchY = e.touches[0].clientY; tVel = 0; tT = performance.now(); }, { passive: true });
+  window.addEventListener("touchend", function () {
+    touchY = null;
+    if (pull > 0 && tVel > 0.4) nudge(Math.min(0.35, tVel * 0.25));   // a flick carries the bar on a little after the finger lifts
+  }, { passive: true });
   // On phones, once the page rests at the bottom the finger drives only the bar: the page is held still (no rubber-band bounce, no toolbar resize),
   // so the bar fills in one smooth sweep instead of the whole site jumping up and down with each move.
   window.addEventListener("touchmove", function (e) {
     if (holding() && curCase()) { e.preventDefault(); return; }
     if (touchY == null) return;
-    var y = e.touches[0].clientY, dy = touchY - y; touchY = y;
+    var y = e.touches[0].clientY, dy = touchY - y, now = performance.now(); touchY = y;
+    var v = dy / Math.max(8, now - tT); tT = now; tVel = tVel * 0.5 + v * 0.5;
     if (curCase() && atEnd(2) && (pull > 0 || (dy > 0 && armedNow()))) e.preventDefault();
-    nudge(dy / 700);
+    nudge(dy / 400 * (1 + Math.min(Math.max(tVel, 0) * 0.8, 1.5)));
   }, { passive: false });
   window.addEventListener("keydown", function (e) { if (/^(ArrowDown|PageDown| )$/.test(e.key)) nudge(0.12); else if (/^(ArrowUp|PageUp)$/.test(e.key)) nudge(-0.12); });
   window.addEventListener("scroll", function () {
