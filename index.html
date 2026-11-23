@@ -479,7 +479,13 @@ body:has(#bookmarks-page:not([hidden])) > footer { display: none; }
 .lightbox.on { opacity: 1; }
 .lightbox img { max-width: 100%; max-height: 100%; width: auto; height: auto; object-fit: contain; border-radius: 6px; box-shadow: 0 16px 40px -16px rgba(0,0,0,.25); transform: scale(.96); transition: transform .3s cubic-bezier(.2,.8,.2,1); }
 .lightbox.on img { transform: none; }
-@media (max-width: 720px) { main.cs img, #play-page .piece-img img { cursor: zoom-in; } }
+main.cs img, #play-page .piece-img img { cursor: zoom-in; }
+#play-page .site-cell img { cursor: pointer; }
+.lightbox .lb-x { position: absolute; top: calc(env(safe-area-inset-top, 0px) + 16px); right: max(16px, env(safe-area-inset-right, 0px)); z-index: 2; width: 40px; height: 40px; border: 0; border-radius: 50%; background: rgba(0,0,0,.55); color: #fff; font-size: 22px; line-height: 1; cursor: pointer; }
+.lightbox .lb-hint { position: absolute; bottom: calc(env(safe-area-inset-bottom, 0px) + 14px); left: 50%; translate: -50% 0; margin: 0; padding: 6px 12px; border-radius: 999px; background: rgba(0,0,0,.55); color: #fff; font-size: 12px; white-space: nowrap; pointer-events: none; }
+@media (hover: none) { .lightbox .lb-hint { display: none; } }
+.lightbox.zoomed img { cursor: grab; } .lightbox.dragging img { cursor: grabbing; }
+.lightbox:not(.zoomed) img { cursor: zoom-in; }
 /* ---------- Kairo case study ---------- */
 /* Kairo journey: the feeling curve sits directly over six stage columns, one dot per column */
 .kj { min-width: 720px; }
@@ -822,14 +828,16 @@ html.has-cursor textarea, html.has-cursor input[type=text], html.has-cursor inpu
 .c-palette span { font-size: 12px; color: var(--muted); }
 .c-tiles { display: grid; grid-template-columns: 1.1fr 1.1fr .8fr; grid-template-rows: repeat(3, auto); gap: var(--sp-3); }
 .c-tiles img { display: block; width: 100%; height: 100%; object-fit: cover; }
-.c-t1, .c-t2, .c-t3 { grid-column: 1; aspect-ratio: 1245 / 572; }
+.c-t1, .c-t2, .c-t3 { grid-column: 1; aspect-ratio: 1245 / 572; height: auto !important; }
 .c-t4 { grid-column: 2; grid-row: 1 / 4; } .c-t5 { grid-column: 3; grid-row: 1 / 4; }
+/* The two tall tiles take their height from the three stacked ones, never the other way round (Safari otherwise stretched the left column) */
+.c-t4, .c-t5 { contain: size; min-height: 0; }
 @media (max-width: 900px) { .c-palette { grid-template-columns: repeat(3, minmax(0, 1fr)); } #concu-overview .cs-trio.k-trio, #jxtapose-overview .cs-trio.k-trio, #carnatic-overview .cs-trio.k-trio { grid-template-columns: 1fr; } }
 @media (max-width: 720px) {
   .c-split { grid-template-columns: 1fr; } .c-split > div { order: -1; } .c-split figure { max-width: 300px; justify-self: center; }
   .c-pair:not(.c-keep) { grid-template-columns: 1fr; } .c-keep { gap: var(--sp-3); }
   .c-tiles { grid-template-columns: 1fr 1fr; grid-template-rows: none; }
-  .c-t1, .c-t2, .c-t3 { grid-column: 1 / -1; } .c-t4, .c-t5 { grid-column: auto; grid-row: auto; aspect-ratio: 1; }
+  .c-t1, .c-t2, .c-t3 { grid-column: 1 / -1; } .c-t4, .c-t5 { grid-column: auto; grid-row: auto; aspect-ratio: 1; contain: none; height: auto; }
 }
 
 /* Jxtapose */
@@ -848,14 +856,14 @@ html.has-cursor textarea, html.has-cursor input[type=text], html.has-cursor inpu
 .cm-split { grid-template-columns: minmax(0, 300px) minmax(0, 1fr); align-items: start; }
 .cm-ragams { display: grid; gap: var(--sp-4); }
 .cs-sec .cm-ragams h3 { font-size: 11px; font-weight: 700; letter-spacing: .1em; text-transform: uppercase; }
-.cm-ragams ul { list-style: none; padding: 0; display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); border-top: 1px solid var(--ink); }
-.cm-ragams li { display: grid; gap: var(--sp-1); padding: var(--sp-4) var(--sp-4) 0 0; }
+.cm-ragams ul { list-style: none; padding: 0; display: flex; justify-content: space-between; gap: var(--sp-4); border-top: 1px solid var(--ink); }
+.cm-ragams li { display: grid; align-content: start; gap: var(--sp-1); padding: var(--sp-4) 0 0; }
 .cm-ragams b { font-family: var(--f-serif); font-weight: 400; font-size: clamp(17px, 1.6vw, 22px); line-height: 1.15; }
 .cm-ragams span { font-size: 13px; color: var(--muted); }
 .cm-spreads { display: grid; gap: var(--sp-8); }
 #carnatic-page .cm-spreads img, #carnatic-page #carnatic-note img { border: 1px solid var(--line); }
 .cm-mocks { grid-template-columns: repeat(2, minmax(0, 1fr)); } .cm-mocks img { border-radius: 4px; }
-@media (max-width: 720px) { .cm-ragams ul { grid-template-columns: 1fr 1fr; row-gap: var(--sp-2); } .cm-split figure { max-width: none; } .cm-mocks { grid-template-columns: 1fr; } .cm-spreads { gap: var(--sp-6); } }
+@media (max-width: 720px) { .cm-ragams ul { display: grid; grid-template-columns: 1fr 1fr; column-gap: var(--sp-4); row-gap: var(--sp-2); } .cm-split figure { max-width: none; } .cm-mocks { grid-template-columns: 1fr; } .cm-spreads { gap: var(--sp-6); } }
 
 /* How I work: each step is a tilted, outlined label card with a small pink number badge on its corner; one dashed pink line runs from badge to badge, behind the cards, as they step left and right down the page */
 .hw-steps { position: relative; z-index: 1; list-style: none; margin: clamp(40px, 6vw, 72px) auto 0; padding: 0; max-width: 1000px; display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); column-gap: clamp(56px, 9vw, 140px); row-gap: clamp(36px, 4.5vw, 60px); align-items: start; }
@@ -945,7 +953,7 @@ html.has-cursor textarea, html.has-cursor input[type=text], html.has-cursor inpu
 @media (max-width: 520px) { .prompts { grid-template-columns: repeat(2, minmax(0, 1fr)); } .wall { --cw: 118px; } .wall .memo-body { font-size: 11px; line-height: 1.4; } .wall .memo-title { font-size: 12px; } }
 </style>
 
-<div class="lightbox" id="lightbox" hidden role="dialog" aria-modal="true" aria-label="Image, full view. Tap outside the image to close."><img alt=""></div>
+<div class="lightbox" id="lightbox" hidden role="dialog" aria-modal="true" aria-label="Image, full view. Click outside the image or press Escape to close."><button type="button" class="lb-x" aria-label="Close">&times;</button><img alt=""><p class="lb-hint">Scroll or click to zoom &middot; drag to move &middot; Esc to close</p></div>
 <header class="scrolled">
   <a class="brand" href="#top">Saadhvi Kompella</a>
   <button class="menu-btn" id="menu-btn" type="button" aria-expanded="false" aria-controls="site-nav" aria-label="Open menu"><span></span><span></span><span></span></button>
@@ -1652,7 +1660,7 @@ html.has-cursor textarea, html.has-cursor input[type=text], html.has-cursor inpu
 
 
 
-  // ---------- Image lightbox (phones) ----------
+  // ---------- Image lightbox (all screens) ----------
   var lb = document.getElementById("lightbox"), lbImg = lb.querySelector("img"), lbY = 0;
   var phoneMQ = window.matchMedia("(max-width: 720px)");
   function openLightbox(src, alt) {
@@ -1668,12 +1676,12 @@ html.has-cursor textarea, html.has-cursor input[type=text], html.has-cursor inpu
   document.addEventListener("click", function (e) {
     var im = e.target.closest && e.target.closest("main.cs img, #play-page .piece-img img");
     if (im && im.closest(".site-cell")) im = null;   // the site screenshot is a link, not a zoomable image
-    if (!im || !phoneMQ.matches) return;
+    if (!im) return;
     e.preventDefault(); openLightbox(im.currentSrc || im.src, im.alt);
   });
   // Pinch to zoom (spread fingers to zoom in, pinch to zoom out), drag to pan while zoomed, double tap to toggle zoom.
   var zs = 1, zx = 0, zy = 0, g = null, moved = false, lastTap = 0;
-  function applyZoom() { lbImg.style.transform = zs === 1 && !zx && !zy ? "" : "translate(" + zx + "px," + zy + "px) scale(" + zs + ")"; }
+  function applyZoom() { lbImg.style.transform = zs === 1 && !zx && !zy ? "" : "translate(" + zx + "px," + zy + "px) scale(" + zs + ")"; lb.classList.toggle("zoomed", zs > 1); }
   function resetZoom(animate) { lbImg.classList.toggle("zooming", !animate); zs = 1; zx = zy = 0; applyZoom(); }
   function baseCentre() { var r = lbImg.getBoundingClientRect(); return [r.left + r.width / 2 - zx, r.top + r.height / 2 - zy]; }
   function clampPan() { var r = lbImg.getBoundingClientRect(), w = r.width / zs, h = r.height / zs; var mx = Math.max(0, (w * zs - innerWidth) / 2 + 24), my = Math.max(0, (h * zs - innerHeight) / 2 + 24); if (zs <= 1) { zx = zy = 0; } else { zx = Math.max(-mx - (w * (zs - 1)) / 2, Math.min(mx + (w * (zs - 1)) / 2, zx)); zy = Math.max(-my - (h * (zs - 1)) / 2, Math.min(my + (h * (zs - 1)) / 2, zy)); } }
@@ -1708,7 +1716,42 @@ html.has-cursor textarea, html.has-cursor input[type=text], html.has-cursor inpu
     g = null;
     setTimeout(function () { moved = false; }, 50);
   });
-  lb.addEventListener("click", function (e) { if (moved) return; if (e.target !== lbImg) closeLightbox(); });
+  // Desktop: scroll to zoom toward the pointer, click the picture to zoom in or out, drag to move around while zoomed.
+  var lastTouch = 0, md = null;
+  lb.addEventListener("touchstart", function () { lastTouch = Date.now(); }, { passive: true });
+  function zoomAt(ns, mx, my) {
+    var c = baseCentre(), px = (mx - c[0] - zx) / zs, py = (my - c[1] - zy) / zs;
+    zs = Math.max(1, Math.min(5, ns)); zx = mx - c[0] - px * zs; zy = my - c[1] - py * zs;
+    if (zs === 1) { zx = zy = 0; applyZoom(); } else { applyZoom(); clampPan(); applyZoom(); }
+  }
+  lb.addEventListener("wheel", function (e) {
+    e.preventDefault();
+    var d = e.deltaMode ? e.deltaY * 33 : e.deltaY;
+    lbImg.classList.add("zooming"); zoomAt(zs * Math.exp(-d * 0.0022), e.clientX, e.clientY);
+    clearTimeout(lb._wt); lb._wt = setTimeout(function () { lbImg.classList.remove("zooming"); }, 120);
+  }, { passive: false });
+  lbImg.addEventListener("mousedown", function (e) {
+    if (e.button || Date.now() - lastTouch < 800) return;
+    e.preventDefault(); md = { x: e.clientX, y: e.clientY, zx0: zx, zy0: zy, moved: false };
+  });
+  window.addEventListener("mousemove", function (e) {
+    if (!md) return;
+    var dx = e.clientX - md.x, dy = e.clientY - md.y;
+    if (!md.moved && Math.hypot(dx, dy) > 4) { md.moved = true; if (zs > 1) { lb.classList.add("dragging"); lbImg.classList.add("zooming"); } }
+    if (md.moved && zs > 1) { zx = md.zx0 + dx; zy = md.zy0 + dy; applyZoom(); }
+  });
+  window.addEventListener("mouseup", function () {
+    if (!md) return;
+    if (md.moved) { moved = true; clampPan(); applyZoom(); setTimeout(function () { moved = false; }, 50); }
+    lb.classList.remove("dragging"); lbImg.classList.remove("zooming"); md = null;
+  });
+  lb.querySelector(".lb-x").addEventListener("click", function (e) { e.stopPropagation(); closeLightbox(); });
+  lb.addEventListener("click", function (e) {
+    if (moved) return;
+    if (e.target !== lbImg) { closeLightbox(); return; }
+    if (Date.now() - lastTouch < 800) return;                     // phones use double tap instead
+    if (zs > 1) resetZoom(true); else zoomAt(2.5, e.clientX, e.clientY);
+  });
   document.addEventListener("keydown", function (e) { if (e.key === "Escape" && !lb.hidden) closeLightbox(); });
   // ---------- Case study pages ----------
   function curCase() { return document.querySelector("main.cs:not([hidden])"); }
