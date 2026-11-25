@@ -705,6 +705,9 @@ body:has(main.cs:not([hidden])) > footer, body:has(#play-page:not([hidden])) > f
   .cs-mini .mini-fill { position: absolute; left: 19px; top: 50%; height: 2px; width: var(--mf, 0px); background: var(--note); translate: 0 -50%; }
   .mini-label { font-size: 11px; white-space: nowrap; margin-left: 4px; flex: none; }
   .cs-mini.no-label .mini-label { display: none; } /* not enough room: dots and progress only */
+}
+@media (max-width: 600px) {
+  .cs-mini .mini-label { display: none; } /* phones: every project shows dots only */
   .cs-meta { grid-template-columns: 1fr 1fr; }
   .cs-trio, .cs-stats { grid-template-columns: 1fr; gap: 18px; }
   .tl-svg { display: none; }
